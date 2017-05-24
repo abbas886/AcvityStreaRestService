@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stackroot.activity.dao.CircleDAO;
 import com.stackroot.activity.dao.UserDAO;
+import com.stackroot.activity.dao.UserHomeDAO;
 import com.stackroot.activity.model.User;
+import com.stackroot.activity.model.UserStream;
+import com.stackroot.activity.vo.UserHome;
 
 
 @RestController
@@ -30,6 +34,14 @@ public class UserRestService {
 
 	@Autowired
 	User user;
+	
+	@Autowired UserHome userHome;
+	
+	@Autowired
+	UserHomeDAO userHomeDAO;
+	
+	@Autowired
+	CircleDAO circleDAO;
 
 	
 	@GetMapping("/")
@@ -49,24 +61,28 @@ public class UserRestService {
 	}
 	
 	@PostMapping("/validate/")
-	public User validate(@RequestBody User user) 
+	public UserHome validate(@RequestBody User user) 
 	{
 		
 		user = userDAO.validate(user.getId(), user.getPassword());
 		if(user==null)
 		{
-			user = new User();
-			user.setErrorCode("404");
-			user.setErrorMessage("Invalid credentials.  Please try again..");
+			
+			userHome.setErrorCode("404");
+			userHome.setErrorMessage("Invalid credentials.  Please try again..");
 			
 		}
 		else
 		{
-			user.setErrorCode("200");
-			user.setErrorMessage("You successfully logged in.");
+			userHome.setErrorCode("200");
+			userHome.setErrorMessage("You successfully logged in.");
+			userHome.setMyInBox(userHomeDAO.getMyInbox(user.getId()));
+			userHome.setMyCircles(circleDAO.getMyCircles(user.getId()));
+			
+			
 		}
 		
-		return user;
+		return userHome;
 	
 	
 		
