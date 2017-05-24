@@ -48,6 +48,30 @@ public class UserRestService {
 		return "Testing my rest controller";
 	}
 	
+	@PostMapping("/validate/")
+	public User validate(@RequestBody User user) 
+	{
+		
+		user = userDAO.validate(user.getId(), user.getPassword());
+		if(user==null)
+		{
+			user = new User();
+			user.setErrorCode("404");
+			user.setErrorMessage("Invalid credentials.  Please try again..");
+			
+		}
+		else
+		{
+			user.setErrorCode("200");
+			user.setErrorMessage("You successfully logged in.");
+		}
+		
+		return user;
+	
+	
+		
+	}
+	
 	
 
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -70,7 +94,7 @@ public class UserRestService {
 
 
 	//@RequestMapping(value = "/user/", method = RequestMethod.POST)
-	@PostMapping("/user/")
+	@PostMapping("/register/")
 	public User createUser(@RequestBody User user) {
 		logger.debug("->->->->calling method createUser");
 		if (userDAO.get(user.getId()) == null) {
