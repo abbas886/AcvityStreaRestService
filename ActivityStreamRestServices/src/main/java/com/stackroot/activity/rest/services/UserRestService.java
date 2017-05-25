@@ -2,7 +2,7 @@ package com.stackroot.activity.rest.services;
 
 import java.util.List;
 
-
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ import com.stackroot.activity.dao.CircleDAO;
 import com.stackroot.activity.dao.UserDAO;
 import com.stackroot.activity.dao.UserHomeDAO;
 import com.stackroot.activity.model.User;
-import com.stackroot.activity.model.UserStream;
 import com.stackroot.activity.vo.UserHome;
+
 
 
 @RestController
@@ -43,6 +43,7 @@ public class UserRestService {
 	@Autowired
 	CircleDAO circleDAO;
 
+	@Autowired HttpSession httpSession;
 	
 	@GetMapping("/")
 	public String server()
@@ -58,6 +59,22 @@ public class UserRestService {
 	{
 		logger.debug("Starting of the method sayHello");
 		return "Testing my rest controller";
+	}
+	
+	
+	@GetMapping("/refresh/")
+	public UserHome refresh()
+	{
+		
+		String loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
+		
+			userHome.setMyInBox(userHomeDAO.getMyInbox(loggedInUserID));
+			userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
+		
+		return userHome;
+	
+	
+		
 	}
 	
 	@PostMapping("/validate/")
@@ -78,6 +95,7 @@ public class UserRestService {
 			userHome.setErrorMessage("You successfully logged in.");
 			userHome.setMyInBox(userHomeDAO.getMyInbox(user.getId()));
 			userHome.setMyCircles(circleDAO.getMyCircles(user.getId()));
+			httpSession.setAttribute("loggedInUserID", user.getId());
 			
 			
 		}
