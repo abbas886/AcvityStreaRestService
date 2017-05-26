@@ -7,8 +7,32 @@ import org.springframework.stereotype.Component;
 import com.stackroot.activity.model.BaseDomain;
 import com.stackroot.activity.model.UserStream;
 @Component
-public class UserHome extends BaseDomain{
+public class UserHome{
 	
+	private String errorCode;
+	
+	private String errorMessage;
+	
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+
 	private List<UserStream> myInBox;
 
 
