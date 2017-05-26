@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.stackroot.activity.model.BaseDomain;
-import com.stackroot.activity.model.UserStream;
+import com.stackroot.activity.model.Stream;
+
 @Component
 public class UserHome{
 	
@@ -33,20 +34,24 @@ public class UserHome{
 	}
 
 
-	private List<UserStream> myInBox;
+	//private List<UserStream> myInBox;
+	
+	private List<Stream> myInBox;
+
+
+	public List<Stream> getMyInBox() {
+		return myInBox;
+	}
+
+
+	public void setMyInBox(List<Stream> myInBox) {
+		this.myInBox = myInBox;
+	}
 
 
 	private List<String> myCircles;
 
 
-	public List<UserStream> getMyInBox() {
-		return myInBox;
-	}
-
-
-	public void setMyInBox(List<UserStream> myInBox) {
-		this.myInBox = myInBox;
-	}
 
 
 	public List<String> getMyCircles() {
