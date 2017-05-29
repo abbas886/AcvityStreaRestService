@@ -20,7 +20,8 @@ import com.stackroot.activity.dao.CircleDAO;
 import com.stackroot.activity.dao.UserDAO;
 import com.stackroot.activity.dao.UserHomeDAO;
 import com.stackroot.activity.model.User;
-import com.stackroot.activity.vo.UserHome;
+import com.stackroot.activity.vo.UserHome;;
+
 
 
 
@@ -29,13 +30,15 @@ public class UserRestService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRestService.class);
 
+	@Autowired private UserHome userHome;
+	
 	@Autowired
 	UserDAO userDAO;
 
 	@Autowired
 	User user;
 	
-	@Autowired UserHome userHome;
+
 	
 	@Autowired
 	UserHomeDAO userHomeDAO;
@@ -45,23 +48,7 @@ public class UserRestService {
 
 	@Autowired HttpSession httpSession;
 	
-	@GetMapping("/")
-	public String server()
-	{
-		logger.debug("Starting of the method server");
-		return "Server is started properly...";
-	}
-	
-	
-	
-	@GetMapping("/hello/")
-	public String sayHello()
-	{
-		logger.debug("Starting of the method sayHello");
-		return "Testing my rest controller";
-	}
-	
-	
+		
 	@GetMapping("/refresh/")
 	public UserHome refresh()
 	{
@@ -70,6 +57,7 @@ public class UserRestService {
 		
 			userHome.setMyInBox(userHomeDAO.getMyInbox(loggedInUserID));
 			userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
+			userHome.setCircleSize(circleDAO.getAllCircles().size());
 		
 		return userHome;
 	

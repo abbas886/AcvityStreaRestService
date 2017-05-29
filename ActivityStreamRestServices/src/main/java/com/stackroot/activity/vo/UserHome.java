@@ -14,6 +14,18 @@ public class UserHome{
 	
 	private String errorMessage;
 	
+	private int circleSize;
+	
+	public int getCircleSize() {
+		return circleSize;
+	}
+
+
+	public void setCircleSize(int circleSize) {
+		this.circleSize = circleSize;
+	}
+
+
 	public String getErrorCode() {
 		return errorCode;
 	}
