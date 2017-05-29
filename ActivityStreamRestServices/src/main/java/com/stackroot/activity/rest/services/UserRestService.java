@@ -22,79 +22,75 @@ import com.stackroot.activity.dao.UserHomeDAO;
 import com.stackroot.activity.model.User;
 import com.stackroot.activity.vo.UserHome;;
 
-
-
-
 @RestController
 public class UserRestService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRestService.class);
 
-	@Autowired private UserHome userHome;
-	
+	@Autowired
+	private UserHome userHome;
+
 	@Autowired
 	UserDAO userDAO;
 
 	@Autowired
 	User user;
-	
 
-	
 	@Autowired
 	UserHomeDAO userHomeDAO;
-	
+
 	@Autowired
 	CircleDAO circleDAO;
 
-	@Autowired HttpSession httpSession;
-	
-		
+	@Autowired
+	HttpSession httpSession;
+
 	@GetMapping("/refresh/")
-	public UserHome refresh()
-	{
-		
+	public UserHome refresh() {
+
 		String loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
-		
-			userHome.setMyInBox(userHomeDAO.getMyInbox(loggedInUserID));
-			userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
-			userHome.setCircleSize(circleDAO.getAllCircles().size());
-		
+
+		userHome.setMyInBox(userHomeDAO.getMyInbox(loggedInUserID));
+		userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
+		userHome.setCircleSize(circleDAO.getAllCircles().size());
+
 		return userHome;
-	
-	
-		
+
 	}
-	
+
 	@PostMapping("/validate/")
-	public UserHome validate(@RequestBody User user) 
-	{
-		
+	public UserHome validate(@RequestBody User user) {
+
 		user = userDAO.validate(user.getId(), user.getPassword());
-		if(user==null)
-		{
-			
+		if (user == null) {
+
 			userHome.setErrorCode("404");
 			userHome.setErrorMessage("Invalid credentials.  Please try again..");
-			
-		}
-		else
-		{
+
+		} else {
 			userHome.setErrorCode("200");
 			userHome.setErrorMessage("You successfully logged in.");
 			userHome.setMyInBox(userHomeDAO.getMyInbox(user.getId()));
 			userHome.setMyCircles(circleDAO.getMyCircles(user.getId()));
 			httpSession.setAttribute("loggedInUserID", user.getId());
-			
-			
+
 		}
-		
+
 		return userHome;
-	
-	
-		
+
 	}
-	
-	
+
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public User logout(HttpSession session) {
+		logger.debug("->->->->calling method logout");
+
+		session.invalidate();
+		user.setErrorCode("200");
+		user.setErrorMessage("You successfully logged out.");
+		
+		logger.debug("You successfully logged out.");
+		return user;
+	};
 
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public List<User> listAllUsers() {
@@ -114,26 +110,21 @@ public class UserRestService {
 		return users;
 	}
 
-
-	//@RequestMapping(value = "/user/", method = RequestMethod.POST)
+	// @RequestMapping(value = "/user/", method = RequestMethod.POST)
 	@PostMapping("/register/")
 	public User createUser(@RequestBody User user) {
 		logger.debug("->->->->calling method createUser");
 		if (userDAO.get(user.getId()) == null) {
 			logger.debug("->->->->User is going to create with id:" + user.getId());
-			  if (userDAO.save(user) ==true)
-			  {
-				  user.setErrorCode("200");
-					user.setErrorMessage("Thank you  for registration");
-			  }
-			  else
-			  {
-				  user.setErrorCode("404");
-					user.setErrorMessage("Could not complete the operatin please contact Admin");
-		
-				  
-			  }
-			
+			if (userDAO.save(user) == true) {
+				user.setErrorCode("200");
+				user.setErrorMessage("Thank you  for registration");
+			} else {
+				user.setErrorCode("404");
+				user.setErrorMessage("Could not complete the operatin please contact Admin");
+
+			}
+
 			return user;
 		}
 		logger.debug("->->->->User already exist with id " + user.getId());
@@ -142,8 +133,7 @@ public class UserRestService {
 		return user;
 	}
 
-	
-	//@RequestMapping(value = "/user/", method = RequestMethod.PUT)
+	// @RequestMapping(value = "/user/", method = RequestMethod.PUT)
 	@PutMapping("/user/")
 	public User updateUser(@RequestBody User user) {
 		logger.debug("->->->->calling method updateUser");
@@ -160,8 +150,6 @@ public class UserRestService {
 		return user;
 	}
 
-
-	
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
 	public User getUser(@PathVariable("id") String id) {
 		logger.debug("->->calling method getUser");
@@ -169,7 +157,7 @@ public class UserRestService {
 		User user = userDAO.get(id);
 		if (user == null) {
 			logger.debug("->->->-> User does not exist wiht id" + id);
-			user = new User(); //To avoid NLP - NullPointerException
+			user = new User(); // To avoid NLP - NullPointerException
 			user.setErrorCode("404");
 			user.setErrorMessage("User does not exist");
 			return user;
@@ -178,9 +166,5 @@ public class UserRestService {
 		logger.debug(user.getName());
 		return user;
 	}
-	
-	
-	
-
 
 }
