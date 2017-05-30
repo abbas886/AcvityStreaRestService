@@ -95,6 +95,28 @@ public class CircleRestService {
 		
 	}
 	
+	@GetMapping(value = "/circle/adduser/{circleID}/{userID}")
+	public List<UserCircle> addUserToCircle(@PathVariable("circleID") String circleID,
+			@PathVariable("userID") String userID) {
+		logger.debug("->->calling method addUserToCircle");
+		logger.debug("Adding " +userID + " to circle " + circleID);
+		 circleDAO.addUser(userID, circleID);
+		
+		return circleDAO.getCircleUsers(circle.getId());
+		
+	}
+	
+	@GetMapping(value = "/circle/removeuser/{circleID}/{userID}")
+	public List<UserCircle> removeUserFromCircle(@PathVariable("circleID") String circleID,
+			@PathVariable("userID") String userID) {
+		logger.debug("->->calling method removeUserFromCircle");
+		logger.debug("removing " +userID + " to circle " + circleID);
+		circleDAO.removeUser(userID, circleID);
+		
+		return circleDAO.getCircleUsers(circle.getId());
+		
+	}
+	
 	@PostMapping(value = "/circle/create/")
 	public Circle createCircle(@RequestBody Circle circle) {
 		logger.debug("->->calling method createCircle");
