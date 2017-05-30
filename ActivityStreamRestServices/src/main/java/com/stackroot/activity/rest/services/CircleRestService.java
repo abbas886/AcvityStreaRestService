@@ -24,6 +24,7 @@ import com.stackroot.activity.dao.UserHomeDAO;
 import com.stackroot.activity.model.Circle;
 import com.stackroot.activity.model.Stream;
 import com.stackroot.activity.model.User;
+import com.stackroot.activity.model.UserCircle;
 import com.stackroot.activity.vo.UserHome;
 
 
@@ -47,6 +48,8 @@ public class CircleRestService {
 
 	@Autowired
 	CircleDAO circleDAO;
+	
+	@Autowired UserCircle userCircle;
 	
 	@Autowired
 	Circle circle;
@@ -82,6 +85,16 @@ public class CircleRestService {
 		
 	}
 	
+	@GetMapping(value = "/circleUsers/{id}")
+	public List<UserCircle> getCircleUsers(@PathVariable("id") String circleName) {
+		logger.debug("->->calling method getCircleUsers");
+		logger.debug("getting user of the circle Name " + circleName);
+		circle = circleDAO.getCircleByName(circleName);
+		logger.debug("getting user of the circle ID " + circleName);
+		return circleDAO.getCircleUsers(circle.getId());
+		
+	}
+	
 	@PostMapping(value = "/circle/create/")
 	public Circle createCircle(@RequestBody Circle circle) {
 		logger.debug("->->calling method createCircle");
@@ -100,13 +113,17 @@ public class CircleRestService {
 		circle.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 		if( circleDAO.save(circle))
 		{
-			circle.setErrorCode("404");
+			userCircle.setCircleID(circle.getId());
+			userCircle.setId((int) (Math.random()*1000000));
+			userCircle.setUserID(loggedInUserID);
+			
+			circle.setErrorCode("200");
 			circle.setErrorMessage("Circle " + name + "successfully created");
 			logger.debug("Circle " + name + "successfully created");
 		}
 		else
 		{
-			circle.setErrorCode("200");
+			circle.setErrorCode("404");
 			circle.setErrorMessage("Could not create circle");
 			logger.debug("->->Could not create circle");
 		}
