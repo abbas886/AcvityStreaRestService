@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.stackroot.activity.dao.StreamDAO;
 import com.stackroot.activity.model.Stream;
+import com.stackroot.activity.util.Util;
 
 
 
@@ -33,27 +34,46 @@ public class StreamRestService {
 	@PostMapping("/send/")
 	public Stream sendMessage(@RequestBody Stream stream) {
 		logger.debug("->->->->calling method sendMessage");
-	String 	loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
-	if(loggedInUserID==null)
-	{
-		stream.setErrorCode("404");
-		stream.setErrorCode("You need to login to send message");
-		return stream;
-	}
+		logger.debug("Sending the message to circle : " + stream.getCircleID());
+		logger.debug("Sending the message to User : " + stream.getReceiverID());
+		
 	
-	stream.setSenderID(loggedInUserID);
+	if(stream.getSenderID().isEmpty())
+		
+	{
+		logger.debug("Sender id not set from front end.  will set from rest services");
+		String 	loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
+		stream.setSenderID(loggedInUserID);
+	}
+	logger.debug("Sending the message from User : " + stream.getSenderID());
+
 	stream.setPostedDate(new Timestamp(System.currentTimeMillis()));
 	stream.setId((int)( Math.random()*1000000));
+	
+	if(!stream.getReceiverID().isEmpty())
+	{
+		String message = stream.getMessage();
+		//one to one message
+		//remove @XXX from message
+		logger.debug("It is one to one message");
+		logger.debug("Message before remove id : " + message);
+		message = Util.removeIDFromMessage(message);
+		logger.debug("Message after remove id : " + message);
+		stream.setMessage(	message);
+		
+	}
 		
 		 if (streamDAO.sendMessage( stream))
 		 {
 			 stream.setErrorCode("200");
 			 stream.setErrorMessage("Successfully sent the message");
+			 logger.debug("Successfully sent the message");
 		 }
 		 else
 		 {
 			 stream.setErrorCode("404");
 			 stream.setErrorMessage("Could not send the message");
+			 logger.debug("Could not send the message");
 			 
 		 }
 		
