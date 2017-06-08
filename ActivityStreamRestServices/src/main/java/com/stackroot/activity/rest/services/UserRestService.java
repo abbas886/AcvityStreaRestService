@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.stackroot.activity.dao.CircleDAO;
 import com.stackroot.activity.dao.UserDAO;
-import com.stackroot.activity.dao.UserHomeDAO;
+import com.stackroot.activity.dao.UserStreamDAO;
 import com.stackroot.activity.model.User;
 import com.stackroot.activity.vo.UserHome;;
 
@@ -37,7 +37,7 @@ public class UserRestService {
 	User user;
 
 	@Autowired
-	UserHomeDAO userHomeDAO;
+	UserStreamDAO userHomeDAO;
 
 	@Autowired
 	CircleDAO circleDAO;
@@ -45,20 +45,9 @@ public class UserRestService {
 	@Autowired
 	HttpSession httpSession;
 
-	@GetMapping("/refresh/")
-	public UserHome refresh() {
 
-		String loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
 
-		userHome.setMyInBox(userHomeDAO.getMyInbox(loggedInUserID));
-		userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
-		userHome.setCircleSize(circleDAO.getAllCircles().size());
-
-		return userHome;
-
-	}
-
-	@PostMapping("/validate/")
+	@PostMapping("/login/")
 	public UserHome validate(@RequestBody User user) {
 
 		user = userDAO.validate(user.getId(), user.getPassword());

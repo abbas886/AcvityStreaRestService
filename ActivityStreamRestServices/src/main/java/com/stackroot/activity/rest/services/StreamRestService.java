@@ -7,13 +7,18 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stackroot.activity.dao.CircleDAO;
 import com.stackroot.activity.dao.StreamDAO;
+import com.stackroot.activity.dao.UserStreamDAO;
 import com.stackroot.activity.model.Stream;
 import com.stackroot.activity.util.Util;
+import com.stackroot.activity.vo.UserHome;
 
 
 
@@ -28,6 +33,44 @@ public class StreamRestService {
 	StreamDAO streamDAO;
 	
 	@Autowired HttpSession httpSession;
+	
+	@Autowired
+	UserStreamDAO userStreamDAO;
+	
+	@Autowired
+	private UserHome userHome;
+	
+	@Autowired
+	CircleDAO circleDAO;
+
+
+	@GetMapping("/refresh/")
+	public UserHome refresh() {
+
+		String loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
+
+		userHome.setMyInBox(userStreamDAO.getMyInbox(loggedInUserID));
+		userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
+		userHome.setCircleSize(circleDAO.getAllCircles().size());
+
+		return userHome;
+
+	}
+	
+	
+	@GetMapping("/load/{firstResult}/{maxResult}")
+	public UserHome load(@PathVariable("firstResult") int firstResult,@PathVariable("maxResult") int maxResult) {
+
+		String loggedInUserID = (String) httpSession.getAttribute("loggedInUserID");
+
+		userHome.setMyInBox(userStreamDAO.getMyInbox(loggedInUserID,firstResult,maxResult));
+		userHome.setMyCircles(circleDAO.getMyCircles(loggedInUserID));
+		userHome.setCircleSize(circleDAO.getAllCircles().size());
+
+		return userHome;
+
+	}
+	
 	
 	
 		//@RequestMapping(value = "/user/", method = RequestMethod.POST)

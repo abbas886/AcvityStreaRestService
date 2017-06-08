@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.stackroot.activity.dao.CircleDAO;
 import com.stackroot.activity.dao.StreamDAO;
 import com.stackroot.activity.dao.UserDAO;
-import com.stackroot.activity.dao.UserHomeDAO;
+import com.stackroot.activity.dao.UserStreamDAO;
 import com.stackroot.activity.model.Circle;
 import com.stackroot.activity.model.Stream;
 import com.stackroot.activity.model.User;
